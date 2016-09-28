@@ -34,6 +34,9 @@ extern "C" {
 
 #include "picrin/setup.h"
 
+#undef PIC_NAN_BOXING
+#define PIC_NAN_BOXING 1
+
 typedef struct pic_state pic_state;
 
 #if PIC_NAN_BOXING

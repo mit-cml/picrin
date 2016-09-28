@@ -1,5 +1,8 @@
-BENZ_SRCS = $(wildcard extlib/benz/*.c)
-BENZ_OBJS = $(BENZ_SRCS:.c=.o)
+BENZ_SRCS_C = $(wildcard extlib/benz/*.c)
+BENZ_SRCS_M = $(wildcard extlib/benz/*.m)
+BENZ_SRCS = $(BENZ_SRCS_C) + $(BENZ_SRCS_M)
+BENZ_OBJS = $(BENZ_SRCS_C:.c=.o)
+BENZ_OBJS += $(BENZ_SRCS_M:.m=.o)
 
 PICRIN_SRCS = \
 	src/main.c\

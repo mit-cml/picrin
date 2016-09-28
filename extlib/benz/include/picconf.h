@@ -3,13 +3,13 @@
  */
 
 /** enable libc? */
-/* #define PIC_USE_LIBC 1 */
+#define PIC_USE_LIBC 1
 
 /** enable stdio */
-/* #define PIC_USE_STDIO 1 */
+#define PIC_USE_STDIO 1
 
 /** enable specific features */
-/* #define PIC_USE_WRITE 1 */
+#define PIC_USE_WRITE 1
 
 /** essential external functions */
 /* #define PIC_JMPBUF jmp_buf */
@@ -19,3 +19,6 @@
 
 /** I/O configuration */
 /* #define PIC_BUFSIZ 1024 */
+
+#define PIC_CSTRING_TO_DOUBLE emyg_atod
+#define PIC_DOUBLE_TO_CSTRING emyg_dtoa

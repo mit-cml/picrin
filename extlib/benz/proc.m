@@ -7,8 +7,11 @@
 #include "picrin/private/object.h"
 #include "picrin/private/vm.h"
 #include "picrin/private/state.h"
+//#include "SCMNameResolver.h"
 
+#if !defined(MIN)
 #define MIN(x,y) ((x) < (y) ? (x) : (y))
+#endif
 
 PIC_NORETURN static void
 arg_error(pic_state *pic, int actual, bool varg, int expected)
