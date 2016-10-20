@@ -269,7 +269,7 @@ write_char(pic_state *pic, pic_value ch, pic_value port, struct writer_control *
 static void
 write_str(pic_state *pic, pic_value str, pic_value port, struct writer_control *p)
 {
-  int i;
+  size_t i;
   const char *cstr = pic_str(pic, str);
 
   if (p->mode == DISPLAY_MODE) {
@@ -470,6 +470,15 @@ write_core(pic_state *pic, pic_value obj, pic_value port, struct writer_control 
     break;
   case PIC_TYPE_DICT:
     write_dict(pic, obj, port, p);
+    break;
+  case YAIL_TYPE_CLASS:
+    pic_fprintf(pic, port, "#<native class %s>", yail_native_class_name(pic, yail_native_class_ptr(pic, obj)));
+    break;
+  case YAIL_TYPE_METHOD:
+    pic_fprintf(pic, port, "#<native method %s>", yail_native_method_name(pic, yail_native_method_ptr(pic, obj)));
+    break;
+  case YAIL_TYPE_INSTANCE:
+    pic_fprintf(pic, port, "#<native %s %p>", yail_native_instance_typename(pic, yail_native_instance_ptr(pic, obj)), yail_native_instance_ptr(pic, obj));
     break;
   default:
     pic_fprintf(pic, port, "#<%s %p>", pic_typename(pic, pic_type(pic, obj)), pic_obj_ptr(obj));

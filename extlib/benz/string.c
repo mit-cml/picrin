@@ -8,7 +8,7 @@
 
 struct rope {
   int refcnt;
-  int weight;
+  size_t weight;
   bool isleaf;
   union {
     struct {
@@ -44,7 +44,7 @@ pic_rope_decref(pic_state *pic, struct rope *rope) {
 }
 
 static struct rope *
-make_rope_leaf(pic_state *pic, const char *str, int len)
+make_rope_leaf(pic_state *pic, const char *str, size_t len)
 {
   struct rope *rope;
 
@@ -63,7 +63,7 @@ make_rope_leaf(pic_state *pic, const char *str, int len)
 }
 
 static struct rope *
-make_rope_lit(pic_state *pic, const char *str, int len)
+make_rope_lit(pic_state *pic, const char *str, size_t len)
 {
   struct rope *rope;
 
@@ -78,7 +78,7 @@ make_rope_lit(pic_state *pic, const char *str, int len)
 }
 
 static struct rope *
-make_rope_slice(pic_state *pic, struct rope *owner, int i, int j)
+make_rope_slice(pic_state *pic, struct rope *owner, size_t i, size_t j)
 {
   struct rope *rope;
 
@@ -138,9 +138,9 @@ merge(pic_state *pic, struct rope *left, struct rope *right)
 }
 
 static struct rope *
-slice(pic_state *pic, struct rope *rope, int i, int j)
+slice(pic_state *pic, struct rope *rope, size_t i, size_t j)
 {
-  int lweight;
+  size_t lweight;
 
   if (i == 0 && rope->weight == j) {
     return pic_rope_incref(rope);
@@ -245,7 +245,7 @@ pic_vstrf_value(pic_state *pic, const char *fmt, va_list ap)
   return str;
 }
 
-int
+size_t
 pic_str_len(pic_state *PIC_UNUSED(pic), pic_value str)
 {
   return pic_str_ptr(pic, str)->rope->weight;

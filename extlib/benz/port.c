@@ -473,7 +473,7 @@ string_close(pic_state *pic, void *cookie)
 }
 
 pic_value
-pic_fmemopen(pic_state *pic, const char *data, int size, const char *mode)
+pic_fmemopen(pic_state *pic, const char *data, size_t size, const char *mode)
 {
   xbuf_t *m;
 

@@ -189,6 +189,9 @@ DEFVAL(pic_true_value, PIC_TYPE_TRUE)
 DEFVAL(pic_false_value, PIC_TYPE_FALSE)
 DEFVAL(pic_undef_value, PIC_TYPE_UNDEF)
 DEFVAL(pic_invalid_value, PIC_TYPE_INVALID)
+DEFVAL(yail_null_value, YAIL_TYPE_NULL)
+DEFVAL(yail_optional_value, YAIL_TYPE_OPTIONAL)
+DEFVAL(yail_typeid_preface_value, YAIL_TYPE_TYPEID_PREFACE)
 
 int
 pic_type(pic_state *PIC_UNUSED(pic), pic_value v)
@@ -255,6 +258,20 @@ pic_typename(pic_state *pic, int type)
     return "record";
   case PIC_TYPE_CP:
     return "checkpoint";
+  case YAIL_TYPE_NULL:
+    return "#!null";
+  case YAIL_TYPE_OPTIONAL:
+    return "#!optional";
+  case YAIL_TYPE_TYPEID_PREFACE:
+    return "::";
+  case YAIL_TYPE_TYPEID:
+    return "#<native type-id>";
+  case YAIL_TYPE_CLASS:
+    return "#<native class>";
+  case YAIL_TYPE_METHOD:
+    return "#<native method>";
+  case YAIL_TYPE_INSTANCE:
+    return "#<native instance>";
   default:
     pic_error(pic, "pic_typename: invalid type given", 1, pic_int_value(pic, type));
   }

@@ -966,6 +966,12 @@ codegen_quote(pic_state *pic, codegen_context *cxt, pic_value obj, bool tailpos)
     cxt->nums[pidx] = pic_float(pic, obj);
     emit_i(pic, cxt, OP_PUSHFLOAT, pidx);
     break;
+  case YAIL_TYPE_NULL:
+  case YAIL_TYPE_OPTIONAL:
+  case YAIL_TYPE_TYPEID_PREFACE:
+  case YAIL_TYPE_TYPEID:
+    emit_n(pic, cxt, OP_PUSHNIL);
+    break;
   case PIC_TYPE_NIL:
     emit_n(pic, cxt, OP_PUSHNIL);
     break;

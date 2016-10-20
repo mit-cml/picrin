@@ -444,6 +444,13 @@ gc_mark_object(pic_state *pic, struct object *obj)
     }
     break;
   }
+#ifdef SCHEME_KIT
+  case YAIL_TYPE_CLASS:
+  case YAIL_TYPE_METHOD:
+  case YAIL_TYPE_INSTANCE:
+    // We rely on Objective-C ARC to manage native objects
+    break;
+#endif
   default:
     PIC_UNREACHABLE();
   }
@@ -590,7 +597,20 @@ gc_finalize_object(pic_state *pic, struct object *obj)
     pic_fclose(pic, pic_obj_value(obj)); /* FIXME */
     break;
   }
-
+#ifdef SCHEME_KIT
+  case YAIL_TYPE_CLASS: {
+    yail_native_class_dtor(pic, (struct native_class *)obj);
+    break;
+  }
+  case YAIL_TYPE_METHOD: {
+    yail_native_method_dtor(pic, (struct native_method *)obj);
+    break;
+  }
+  case YAIL_TYPE_INSTANCE: {
+    yail_native_instance_dtor(pic, (struct native_instance *)obj);
+    break;
+  }
+#endif
   case PIC_TYPE_PAIR:
   case PIC_TYPE_CXT:
   case PIC_TYPE_ERROR:

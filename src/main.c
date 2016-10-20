@@ -5,6 +5,8 @@
 #include "picrin.h"
 #include "picrin/extra.h"
 
+void pic_init_yail(pic_state *);
+
 void
 pic_init_picrin(pic_state *pic)
 {
@@ -13,6 +15,7 @@ pic_init_picrin(pic_state *pic)
 
   pic_init_contrib(pic);
   pic_load_piclib(pic);
+  pic_init_yail(pic);
 }
 
 int picrin_argc;
@@ -40,6 +43,7 @@ main(int argc, char *argv[], char **envp)
   pic_try {
     pic_init_picrin(pic);
 
+    enable_debug = 1;
     pic_funcall(pic, "picrin.main", "main", 0);
 
     status = 0;

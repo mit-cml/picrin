@@ -7,6 +7,8 @@
 #include "picrin/private/object.h"
 #include "picrin/private/state.h"
 
+typedef uint64_t pic_value;
+
 KHASH_DEFINE(env, struct identifier *, symbol *, kh_ptr_hash_func, kh_ptr_hash_equal)
 KHASH_DEFINE(ltable, const char *, struct lib, kh_str_hash_func, kh_str_cmp_func)
 

@@ -9,6 +9,15 @@
 #undef EOF
 #define EOF (-1)
 
+int enable_debug = 0;
+int debug_depth = 0;
+
+#define DBG(...) if(enable_debug) { fprintf(stderr, "[DBG] ");   \
+    for(int _dbg_i = 0; _dbg_i < debug_depth; ++_dbg_i)          \
+      fprintf(stderr, "  ");                                     \
+    fprintf(stderr, __VA_ARGS__);                                \
+    fprintf(stderr, "\n"); }
+
 KHASH_DECLARE(read, int, pic_value)
 KHASH_DEFINE(read, int, pic_value, kh_int_hash_func, kh_int_hash_equal)
 
@@ -25,6 +34,7 @@ typedef pic_value (*pic_reader_t)(pic_state *, pic_value port, int c, struct rea
 static pic_reader_t reader_table[256];
 static pic_reader_t reader_dispatch[256];
 
+static pic_value read_atom(pic_state *pic, pic_value port, int c, struct reader_control *p);
 static pic_value read_value(pic_state *pic, pic_value port, int c, struct reader_control *p);
 static pic_value read_nullable(pic_state *pic, pic_value port, int c, struct reader_control *p);
 
@@ -131,22 +141,50 @@ read_datum_comment(pic_state *pic, pic_value port, int PIC_UNUSED(c), struct rea
 static pic_value
 read_directive(pic_state *pic, pic_value port, int c, struct reader_control *p)
 {
-  switch (peek(pic, port)) {
-  case 'n':
-    if (expect(pic, port, "no-fold-case")) {
-      p->typecase = CASE_DEFAULT;
-      return pic_invalid_value(pic);
-    }
-    break;
-  case 'f':
-    if (expect(pic, port, "fold-case")) {
-      p->typecase = CASE_FOLD;
-      return pic_invalid_value(pic);
-    }
-    break;
+  c = next(pic, port);
+  pic_value atom = read_atom(pic, port, c, p);
+  if (0 == strcmp("no-fold-case", pic_str(pic, atom))) {
+    p->typecase = CASE_DEFAULT;
+    return pic_invalid_value(pic);
+  } else if (0 == strcmp("fold-case", pic_str(pic, atom))) {
+    p->typecase = CASE_FOLD;
+    return pic_invalid_value(pic);
+  } else if (0 == strcmp("optional", pic_str(pic, atom))) {
+    return yail_optional_value(pic);
+  } else if (0 == strcmp("null", pic_str(pic, atom))) {
+    return yail_null_value(pic);
+  } else {
+    return pic_invalid_value(pic);
+  }
+}
+
+static int
+hex_value(int c) {
+  if (c >= '0' && c <= '9') {
+    return c - '0';
+  } else if (c >= 'A' && c <= 'F') {
+    return c - 'A' + 10;
+  } else if (c >= 'a' && c <= 'f') {
+    return c - 'a' + 10;
+  } else {
+    return -1;
+  }
+}
+
+static pic_value
+read_hex(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UNUSED(p))
+{
+  int value = 0;
+  int nibble;
+  c = peek(pic, port);
+  while ( (nibble = hex_value(c)) != -1 ) {
+    next(pic, port);
+    value = (value << 4) | nibble;
+    c = peek(pic, port);
   }
 
-  return read_comment(pic, port, c, p);
+  DBG("parsed hex value = %X", value);
+  return pic_int_value(pic, value);
 }
 
 static pic_value
@@ -220,6 +258,7 @@ read_atom(pic_state *pic, pic_value port, int c, struct reader_control *p) {
     buf[len] = 0;
   }
 
+  DBG("Read atom: %s", buf);
   str = pic_str_value(pic, buf, len);
   pic_free(pic, buf);
 
@@ -465,16 +504,29 @@ read_pair(pic_state *pic, pic_value port, int c, struct reader_control *p)
 {
   static const int tCLOSE = ')';
   pic_value car, cdr;
+  int did_increment = 0;
+  if (enable_debug) {
+    if (c != '|') {
+      DBG("(");
+      ++debug_depth;
+      did_increment = 1;
+    }
+  }
 
  retry:
 
   c = skip(pic, port, ' ');
 
   if (c == tCLOSE) {
+    if (enable_debug) {
+      --debug_depth;
+      DBG(")");
+    }
     return pic_nil_value(pic);
   }
   if (c == '.' && isdelim(peek(pic, port))) {
     cdr = read_value(pic, port, next(pic, port), p);
+    if (enable_debug) --debug_depth;
 
   closing:
     if ((c = skip(pic, port, ' ')) != tCLOSE) {
@@ -492,7 +544,7 @@ read_pair(pic_state *pic, pic_value port, int c, struct reader_control *p)
       goto retry;
     }
 
-    cdr = read_pair(pic, port, '(', p);
+    cdr = read_pair(pic, port, '|', p);
     return pic_cons(pic, car, cdr);
   }
 }
@@ -655,6 +707,21 @@ read_value(pic_state *pic, pic_value port, int c, struct reader_control *p)
   return val;
 }
 
+static pic_value
+read_native(pic_state *pic, pic_value port, int c, struct reader_control *p) {
+  pic_value val;
+  DBG("Read %c", (char)c);
+  c = peek(pic, port);
+  if (c == ':') {
+    next(pic, port);  // chomp :
+    DBG("TypeID preface detected");
+    return yail_typeid_preface_value(pic);
+  }
+  DBG("Reading method name");
+  val = read_symbol(pic, port, ':', p);
+  return val;
+}
+
 static void
 reader_table_init(void)
 {
@@ -674,6 +741,7 @@ reader_table_init(void)
 
   reader_table[')'] = read_unmatch;
   reader_table[';'] = read_comment;
+  reader_table[':'] = read_native;
   reader_table['\''] = read_quote;
   reader_table['`'] = read_quasiquote;
   reader_table[','] = read_unquote;
@@ -698,6 +766,7 @@ reader_table_init(void)
   reader_dispatch['\\'] = read_char;
   reader_dispatch['('] = read_vector;
   reader_dispatch['u'] = read_undef_or_blob;
+  reader_dispatch['x'] = read_hex;
 
   /* read labels */
   for (c = '0'; c <= '9'; ++c) {

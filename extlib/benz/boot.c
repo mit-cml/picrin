@@ -109,7 +109,7 @@ my $src = <<'EOL';
                    (list the-define
                          (car (cadr form))
                          (cons the-lambda (cons (cdr (cadr form)) (cddr form))))
-                   (error "define: binding to non-varaible object" form)))))
+                   (error "define: binding to non-variable object" form)))))
      (length form))))
 
 (builtin:define-macro define-macro
@@ -803,7 +803,7 @@ static const char boot_rom[][80] = {
 "m))\n               (if (pair? (cadr form))\n                   (list the-define\n ",
 "                        (car (cadr form))\n                         (cons the-lam",
 "bda (cons (cdr (cadr form)) (cddr form))))\n                   (error \"define: bi",
-"nding to non-varaible object\" form)))))\n     (length form))))\n\n(builtin:define-m",
+"nding to non-variable object\" form)))))\n     (length form))))\n\n(builtin:define-m",
 "acro define-macro\n  (lambda (form env)\n    (if (= (length form) 3)\n        (if (",
 "identifier? (cadr form))\n            (cons the-builtin-define-macro (cdr form))\n",
 "            (error \"define-macro: binding to non-variable object\" form))\n       ",

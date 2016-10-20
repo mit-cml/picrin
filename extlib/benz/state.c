@@ -7,6 +7,8 @@
 #include "picrin/private/object.h"
 #include "picrin/private/state.h"
 
+typedef uint64_t pic_value;
+
 static pic_value
 pic_features(pic_state *pic)
 {
@@ -108,6 +110,9 @@ void pic_init_record(pic_state *);
 void pic_init_eval(pic_state *);
 void pic_init_lib(pic_state *);
 void pic_init_weak(pic_state *);
+#if !defined(STANDALONE)
+void pic_init_yail(pic_state *);
+#endif
 
 void pic_boot(pic_state *);
 
@@ -151,6 +156,9 @@ pic_init_core(pic_state *pic)
   pic_init_eval(pic); DONE;
   pic_init_lib(pic); DONE;
   pic_init_weak(pic); DONE;
+#if !defined(STANDALONE)
+//  pic_init_yail(pic); DONE;
+#endif
 
 #if PIC_USE_WRITE
   pic_init_write(pic); DONE;

@@ -30,7 +30,7 @@ void pic_load_cstr(pic_state *, const char *);
 #if PIC_USE_STDIO
 pic_value pic_fopen(pic_state *, FILE *, const char *mode);
 #endif
-pic_value pic_fmemopen(pic_state *, const char *buf, int len, const char *mode);
+pic_value pic_fmemopen(pic_state *, const char *buf, size_t len, const char *mode);
 int pic_fgetbuf(pic_state *, pic_value port, const char **buf, int *len);
 
 /* utility macros */

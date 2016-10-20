@@ -2,7 +2,11 @@
  * See Copyright Notice in picrin.h
  */
 
+#ifdef STANDALONE
 #include "picconf.h"
+#else
+#import <SchemeKit/picconf.h>
+#endif
 
 #ifndef PIC_USE_LIBC
 # define PIC_USE_LIBC 1

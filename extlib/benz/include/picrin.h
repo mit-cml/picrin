@@ -32,7 +32,11 @@ extern "C" {
 #include <limits.h>
 #include <stdarg.h>
 
+#ifdef STANDALONE
 #include "picrin/setup.h"
+#else
+#include <SchemeKit/setup.h>
+#endif
 
 #undef PIC_NAN_BOXING
 #define PIC_NAN_BOXING 1
@@ -155,7 +159,11 @@ enum {
   PIC_TYPE_TRUE    = 8,
   PIC_TYPE_NIL     = 7,
   PIC_TYPE_FALSE   = 9,
-  PIC_IVAL_END     = 10,
+  YAIL_TYPE_NULL   = 10,
+  YAIL_TYPE_OPTIONAL = 11,
+  YAIL_TYPE_TYPEID_PREFACE = 12,
+  YAIL_TYPE_TYPEID = 13,
+  PIC_IVAL_END     = 14,
 /* -------------------- */
   PIC_TYPE_STRING  = 16,
   PIC_TYPE_VECTOR  = 17,
@@ -173,7 +181,10 @@ enum {
   PIC_TYPE_CXT     = 30,
   PIC_TYPE_CP      = 31,
   PIC_TYPE_FUNC    = 32,
-  PIC_TYPE_IREP    = 33
+  PIC_TYPE_IREP    = 33,
+  YAIL_TYPE_CLASS  = 34,
+  YAIL_TYPE_METHOD = 35,
+  YAIL_TYPE_INSTANCE = 36
 };
 
 #define pic_invalid_p(pic,v) (pic_type(pic,v) == PIC_TYPE_INVALID)
@@ -195,6 +206,15 @@ enum {
 #define pic_weak_p(pic,v) (pic_type(pic,v) == PIC_TYPE_WEAK)
 #define pic_port_p(pic, v) (pic_type(pic, v) == PIC_TYPE_PORT)
 #define pic_sym_p(pic,v) (pic_type(pic,v) == PIC_TYPE_SYMBOL)
+#ifdef SCHEME_KIT
+#define yail_null_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_NULL)
+#define yail_optional_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_OPTIONAL)
+#define yail_typeid_preface_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_TYPEID_PREFACE)
+#define yail_typeid_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_TYPEID)
+#define yail_native_class_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_CLASS)
+#define yail_native_method_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_METHOD)
+#define yail_native_instance_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_INSTANCE)
+#endif
 bool pic_data_p(pic_state *, pic_value, const pic_data_type *);
 
 int pic_type(pic_state *, pic_value);
@@ -258,13 +278,34 @@ pic_value pic_intern(pic_state *, pic_value str);
 pic_value pic_sym_name(pic_state *, pic_value sym);
 
 /* string */
-int pic_str_len(pic_state *, pic_value str);
+size_t pic_str_len(pic_state *, pic_value str);
 char pic_str_ref(pic_state *, pic_value str, int i);
 pic_value pic_str_cat(pic_state *, pic_value str1, pic_value str2);
 pic_value pic_str_sub(pic_state *, pic_value str, int i, int j);
 int pic_str_cmp(pic_state *, pic_value str1, pic_value str2);
 int pic_str_hash(pic_state *, pic_value str);
 
+#ifdef SCHEME_KIT
+/* yail */
+struct native_class;
+struct native_method;
+struct native_instance;
+
+pic_value yail_null_value(pic_state *);
+pic_value yail_optional_value(pic_state *);
+pic_value yail_typeid_preface_value(pic_state *);
+
+const char *yail_native_class_name(pic_state *, struct native_class *);
+const char *yail_native_method_name(pic_state *, struct native_method *);
+const char *yail_native_instance_typename(pic_state *, struct native_instance *);
+
+void yail_native_class_dtor(pic_state *, struct native_class *);
+void yail_native_method_dtor(pic_state *, struct native_method *);
+void yail_native_instance_dtor(pic_state *, struct native_instance *);
+
+void pic_init_yail(pic_state *);
+void yail_set_current_form(pic_state *, pic_value);
+#endif
 
 
 /* External I/O */
@@ -294,6 +335,7 @@ int pic_printf(pic_state *, const char *fmt, ...);
 int pic_fprintf(pic_state *, pic_value port, const char *fmt, ...);
 int pic_vfprintf(pic_state *, pic_value port, const char *fmt, va_list ap);
 
+extern int enable_debug;
 
 #if defined(__cplusplus)
 }

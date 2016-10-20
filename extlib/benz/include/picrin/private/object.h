@@ -131,6 +131,14 @@ struct checkpoint {
   struct checkpoint *prev;
 };
 
+#ifdef SCHEME_KIT
+
+typedef struct native_class native_class;
+typedef struct native_method native_method;
+typedef struct native_instance native_instance;
+
+#endif
+
 struct object *pic_obj_ptr(pic_value);
 
 #define pic_id_ptr(pic, o) (assert(pic_id_p(pic, o)), (struct identifier *)pic_obj_ptr(o))
@@ -147,6 +155,11 @@ struct object *pic_obj_ptr(pic_value);
 #define pic_port_ptr(pic, o) (assert(pic_port_p(pic, o)), (struct port *)pic_obj_ptr(o))
 #define pic_error_ptr(pic, o) (assert(pic_error_p(pic, o)), (struct error *)pic_obj_ptr(o))
 #define pic_rec_ptr(pic, o) (assert(pic_rec_p(pic, o)), (struct record *)pic_obj_ptr(o))
+#ifdef SCHEME_KIT
+#define yail_native_class_ptr(pic, o) (assert(yail_native_class_p(pic, o)), (struct native_class *)pic_obj_ptr(o))
+#define yail_native_method_ptr(pic, o) (assert(yail_native_method_p(pic, o)), (struct native_method *)pic_obj_ptr(o))
+#define yail_native_instance_ptr(pic, o) (assert(yail_native_instance_p(pic, o)), (struct native_instance *)pic_obj_ptr(o))
+#endif
 
 #define pic_obj_p(pic,v) (pic_type(pic,v) > PIC_IVAL_END)
 #define pic_env_p(pic, v) (pic_type(pic, v) == PIC_TYPE_ENV)

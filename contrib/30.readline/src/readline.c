@@ -242,6 +242,7 @@ pic_rl_history_expand(pic_state *pic)
 
 void
 pic_init_readline(pic_state *pic){
+#ifdef STANDALONE
   using_history();
 
   pic_deflibrary(pic, "picrin.readline");
@@ -270,4 +271,5 @@ pic_init_readline(pic_state *pic){
   pic_defun(pic, "write-history", pic_rl_write_history);
   pic_defun(pic, "truncate-file", pic_rl_truncate_file);
   pic_defun(pic, "history-expand", pic_rl_history_expand);
+#endif
 }

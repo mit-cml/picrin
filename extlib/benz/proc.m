@@ -7,7 +7,10 @@
 #include "picrin/private/object.h"
 #include "picrin/private/vm.h"
 #include "picrin/private/state.h"
-//#include "SCMNameResolver.h"
+#ifdef SCHEME_KIT
+#include "yail.h"
+#include "SCMNameResolver.h"
+#endif
 
 #if !defined(MIN)
 #define MIN(x,y) ((x) < (y) ? (x) : (y))
@@ -248,7 +251,13 @@ global_ref(pic_state *pic, pic_value uid)
   pic_value val;
 
   if (! pic_weak_has(pic, pic->globals, uid)) {
+#ifdef SCHEME_KIT
+    if (yail_resolve_native_symbol(pic, uid)) {
+      pic_error(pic, "undefined variable", 1, uid);
+    }
+#else
     pic_error(pic, "undefined variable", 1, uid);
+#endif
   }
   val = pic_weak_ref(pic, pic->globals, uid);;
   if (pic_invalid_p(pic, val)) {
