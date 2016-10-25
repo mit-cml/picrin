@@ -432,6 +432,12 @@ write_core(pic_state *pic, pic_value obj, pic_value port, struct writer_control 
   case PIC_TYPE_NIL:
     pic_fprintf(pic, port, "()");
     break;
+  case YAIL_TYPE_NULL:
+    pic_fprintf(pic, port, "#!null");
+    break;
+  case YAIL_TYPE_VOID:
+    pic_fprintf(pic, port, "#!void");
+    break;
   case PIC_TYPE_TRUE:
     pic_fprintf(pic, port, "#t");
     break;
@@ -473,6 +479,9 @@ write_core(pic_state *pic, pic_value obj, pic_value port, struct writer_control 
     break;
   case YAIL_TYPE_CLASS:
     pic_fprintf(pic, port, "#<native class %s>", yail_native_class_name(pic, yail_native_class_ptr(pic, obj)));
+    break;
+  case YAIL_TYPE_PROTOCOL:
+    pic_fprintf(pic, port, "#<native protocol %s>", yail_native_protocol_name(pic, yail_native_protocol_ptr(pic, obj)));
     break;
   case YAIL_TYPE_METHOD:
     pic_fprintf(pic, port, "#<native method %s>", yail_native_method_name(pic, yail_native_method_ptr(pic, obj)));

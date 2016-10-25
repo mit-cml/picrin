@@ -112,10 +112,10 @@ typedef unsigned long uint32_t;
 # endif
 #endif
 
-#if __STDC_VERSION__ >= 201112L
-# include <stdnoreturn.h>
-# define PIC_NORETURN noreturn
-#elif __GNUC__ || __clang__
+//#if __STDC_VERSION__ >= 201112L
+//# include <stdnoreturn.h>
+//# define PIC_NORETURN noreturn
+#if __GNUC__ || __clang__
 # define PIC_NORETURN __attribute__((noreturn))
 #else
 # define PIC_NORETURN

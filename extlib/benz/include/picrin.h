@@ -163,7 +163,8 @@ enum {
   YAIL_TYPE_OPTIONAL = 11,
   YAIL_TYPE_TYPEID_PREFACE = 12,
   YAIL_TYPE_TYPEID = 13,
-  PIC_IVAL_END     = 14,
+  YAIL_TYPE_VOID   = 14,
+  PIC_IVAL_END     = 15,
 /* -------------------- */
   PIC_TYPE_STRING  = 16,
   PIC_TYPE_VECTOR  = 17,
@@ -183,8 +184,9 @@ enum {
   PIC_TYPE_FUNC    = 32,
   PIC_TYPE_IREP    = 33,
   YAIL_TYPE_CLASS  = 34,
-  YAIL_TYPE_METHOD = 35,
-  YAIL_TYPE_INSTANCE = 36
+  YAIL_TYPE_PROTOCOL = 35,
+  YAIL_TYPE_METHOD = 36,
+  YAIL_TYPE_INSTANCE = 37
 };
 
 #define pic_invalid_p(pic,v) (pic_type(pic,v) == PIC_TYPE_INVALID)
@@ -212,8 +214,10 @@ enum {
 #define yail_typeid_preface_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_TYPEID_PREFACE)
 #define yail_typeid_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_TYPEID)
 #define yail_native_class_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_CLASS)
+#define yail_native_protocol_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_PROTOCOL)
 #define yail_native_method_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_METHOD)
 #define yail_native_instance_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_INSTANCE)
+#define yail_void_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_VOID)
 #endif
 bool pic_data_p(pic_state *, pic_value, const pic_data_type *);
 
@@ -288,18 +292,22 @@ int pic_str_hash(pic_state *, pic_value str);
 #ifdef SCHEME_KIT
 /* yail */
 struct native_class;
+struct native_protocol;
 struct native_method;
 struct native_instance;
 
 pic_value yail_null_value(pic_state *);
 pic_value yail_optional_value(pic_state *);
 pic_value yail_typeid_preface_value(pic_state *);
+pic_value yail_void_value(pic_state *);
 
 const char *yail_native_class_name(pic_state *, struct native_class *);
+const char *yail_native_protocol_name(pic_state *, struct native_protocol *);
 const char *yail_native_method_name(pic_state *, struct native_method *);
 const char *yail_native_instance_typename(pic_state *, struct native_instance *);
 
 void yail_native_class_dtor(pic_state *, struct native_class *);
+void yail_native_protocol_dtor(pic_state *, struct native_protocol *);
 void yail_native_method_dtor(pic_state *, struct native_method *);
 void yail_native_instance_dtor(pic_state *, struct native_instance *);
 

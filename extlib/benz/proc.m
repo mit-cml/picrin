@@ -358,7 +358,7 @@ pic_apply(pic_state *pic, pic_value proc, int argc, pic_value *argv)
 
 #if PIC_DIRECT_THREADED_VM
   static const void *oplabels[] = {
-    &&L_OP_NOP, &&L_OP_POP, &&L_OP_PUSHUNDEF, &&L_OP_PUSHNIL, &&L_OP_PUSHTRUE,
+    &&L_OP_NOP, &&L_OP_POP, &&L_OP_PUSHUNDEF, &&L_OP_PUSHNIL, &&L_OP_PUSHNULL, &&L_OP_PUSHVOID, &&L_OP_PUSHTRUE,
     &&L_OP_PUSHFALSE, &&L_OP_PUSHINT, &&L_OP_PUSHFLOAT,
     &&L_OP_PUSHCHAR, &&L_OP_PUSHEOF, &&L_OP_PUSHCONST,
     &&L_OP_GREF, &&L_OP_GSET, &&L_OP_LREF, &&L_OP_LSET, &&L_OP_CREF, &&L_OP_CSET,
@@ -396,6 +396,14 @@ pic_apply(pic_state *pic, pic_value proc, int argc, pic_value *argv)
     }
     CASE(OP_PUSHNIL) {
       PUSH(pic_nil_value(pic));
+      NEXT;
+    }
+    CASE(OP_PUSHNULL) {
+      PUSH(yail_null_value(pic));
+      NEXT;
+    }
+    CASE(OP_PUSHVOID) {
+      PUSH(yail_void_value(pic));
       NEXT;
     }
     CASE(OP_PUSHTRUE) {

@@ -192,6 +192,7 @@ DEFVAL(pic_invalid_value, PIC_TYPE_INVALID)
 DEFVAL(yail_null_value, YAIL_TYPE_NULL)
 DEFVAL(yail_optional_value, YAIL_TYPE_OPTIONAL)
 DEFVAL(yail_typeid_preface_value, YAIL_TYPE_TYPEID_PREFACE)
+DEFVAL(yail_void_value, YAIL_TYPE_VOID)
 
 int
 pic_type(pic_state *PIC_UNUSED(pic), pic_value v)
@@ -268,6 +269,8 @@ pic_typename(pic_state *pic, int type)
     return "#<native type-id>";
   case YAIL_TYPE_CLASS:
     return "#<native class>";
+  case YAIL_TYPE_PROTOCOL:
+    return "#<native protocol>";
   case YAIL_TYPE_METHOD:
     return "#<native method>";
   case YAIL_TYPE_INSTANCE:

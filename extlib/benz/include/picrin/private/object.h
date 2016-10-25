@@ -134,6 +134,7 @@ struct checkpoint {
 #ifdef SCHEME_KIT
 
 typedef struct native_class native_class;
+typedef struct native_protocol native_protocol;
 typedef struct native_method native_method;
 typedef struct native_instance native_instance;
 
@@ -157,6 +158,7 @@ struct object *pic_obj_ptr(pic_value);
 #define pic_rec_ptr(pic, o) (assert(pic_rec_p(pic, o)), (struct record *)pic_obj_ptr(o))
 #ifdef SCHEME_KIT
 #define yail_native_class_ptr(pic, o) (assert(yail_native_class_p(pic, o)), (struct native_class *)pic_obj_ptr(o))
+#define yail_native_protocol_ptr(pic, o) (assert(yail_native_protocol_p(pic, o)), (struct native_protocol *)pic_obj_ptr(o))
 #define yail_native_method_ptr(pic, o) (assert(yail_native_method_p(pic, o)), (struct native_method *)pic_obj_ptr(o))
 #define yail_native_instance_ptr(pic, o) (assert(yail_native_instance_p(pic, o)), (struct native_instance *)pic_obj_ptr(o))
 #endif

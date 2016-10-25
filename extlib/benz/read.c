@@ -153,6 +153,8 @@ read_directive(pic_state *pic, pic_value port, int c, struct reader_control *p)
     return yail_optional_value(pic);
   } else if (0 == strcmp("null", pic_str(pic, atom))) {
     return yail_null_value(pic);
+  } else if (0 == strcmp("void", pic_str(pic, atom))) {
+    return yail_void_value(pic);
   } else {
     return pic_invalid_value(pic);
   }

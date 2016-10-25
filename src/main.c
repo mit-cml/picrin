@@ -43,7 +43,7 @@ main(int argc, char *argv[], char **envp)
   pic_try {
     pic_init_picrin(pic);
 
-    enable_debug = 1;
+    //enable_debug = 1;
     pic_funcall(pic, "picrin.main", "main", 0);
 
     status = 0;
