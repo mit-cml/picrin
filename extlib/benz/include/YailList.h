@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#include <SchemeKit/picrin.h>
+#include "picrin.h"
 
 @interface YailList : NSMutableArray
 
