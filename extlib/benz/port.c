@@ -487,6 +487,7 @@ pic_fmemopen(pic_state *pic, const char *data, size_t size, const char *mode)
     memcpy(m->buf, data, size);
     return pic_funopen(pic, m, string_read, NULL, string_seek, string_close);
   } else {
+    memset(m->buf, 0, size);
     return pic_funopen(pic, m, NULL, string_write, string_seek, string_close);
   }
 }
