@@ -58,7 +58,9 @@ pic_load_point(pic_state *pic, struct cont *cont)
 void
 pic_exit_point(pic_state *pic)
 {
-  pic->cc = pic->cc->prev;
+  if (pic->cc != NULL) {
+    pic->cc = pic->cc->prev;
+  }
 }
 
 void
