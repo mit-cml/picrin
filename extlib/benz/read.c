@@ -386,6 +386,22 @@ read_string(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UN
       case 't': c = '\t'; break;
       case 'n': c = '\n'; break;
       case 'r': c = '\r'; break;
+      case 'u':
+          c = 0;
+          for (int i = 0; i < 4; i++) {  // read up to 4 characters of hexadecimal for unicode char
+            c <<= 4;
+            int hex = next(pic, port);
+            if ('0' <= hex && hex <= '9') {
+              c |= hex - '0';
+            } else if ('A' <= hex && hex <= 'F') {
+              c |= hex - 'A' + 10;
+            } else if ('a' <= hex && hex <= 'f') {
+              c |= hex - 'a' + 10;
+            } else {
+              break;
+            }
+          }
+          break;
       }
     }
     buf[cnt++] = (char)c;
