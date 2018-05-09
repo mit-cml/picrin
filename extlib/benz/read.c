@@ -365,16 +365,41 @@ read_char(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UNUS
   read_error(pic, "unexpected character while reading character literal", pic_list(pic, 1, pic_char_value(pic, c)));
 }
 
+static void
+push_utf8(pic_state *pic, char **buf, int *cnt, int *size, int c) {
+  // Resize the buffer--this can be wasteful if the UTF-8 code point is shorter than 4 and occurs at
+  // the very end of the buffer, but it should be safe.
+  if ((*cnt + 5) >= *size) {
+    *buf = pic_realloc(pic, *buf, *size *= 2);
+  }
+  if (c >= 0x10000) {  // 4-byte UTF-8 code point
+    (*buf)[(*cnt)++] = (char)(0xF0 | ((c >> 18) & 0x7));
+    (*buf)[(*cnt)++] = (char)(0x80 | ((c >> 12) & 0x3F));
+    (*buf)[(*cnt)++] = (char)(0x80 | ((c >> 6) & 0x3F));
+    (*buf)[(*cnt)++] = (char)(0x80 | (c & 0x3F));
+  } else if (c >= 0x800) {  // 3-byte UTF-8 code point
+    (*buf)[(*cnt)++] = (char)(0xE0 | ((c >> 12) & 0xF));
+    (*buf)[(*cnt)++] = (char)(0x80 | ((c >> 6) & 0x3F));
+    (*buf)[(*cnt)++] = (char)(0x80 | (c & 0x3F));
+  } else if (c >= 0x80) {  // 2-byte UTF-8 code point
+    (*buf)[(*cnt)++] = (char)(0xC0 | ((c >> 6) & 0x1F));
+    (*buf)[(*cnt)++] = (char)(0x80 | (c & 0x3F));
+  } else {
+    (*buf)[(*cnt)++] = (char)c;
+  }
+}
+
 static pic_value
 read_string(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UNUSED(p))
 {
   char *buf;
-  int size, cnt;
+  int size, cnt, high;
   pic_value str;
 
   size = 256;
   buf = pic_malloc(pic, size);
   cnt = 0;
+  high = 0;
 
   /* TODO: intraline whitespaces */
 
@@ -404,9 +429,22 @@ read_string(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UN
           break;
       }
     }
-    buf[cnt++] = (char)c;
-    if (cnt >= size) {
-      buf = pic_realloc(pic, buf, size *= 2);
+    if (c >= 0xD800 && c < 0xDC00) {
+      high = c;
+    } else if (c >= 0xDC00 && c <= 0xDFFF) {
+      if (!high) {
+        // error: low surrogate without high
+        pic_error(pic, "UTF-16 low surrogate without high", 0);
+      }
+      c &= 0x3FF;
+      c |= (high & 0x3FF) << 10;
+      high = 0;
+      push_utf8(pic, &buf, &cnt, &size, c | 0x10000);
+    } else if (high) {
+      // error: high surrogate without low
+      pic_error(pic, "UTF-16 high surrogate without low", 0);
+    } else {
+      push_utf8(pic, &buf, &cnt, &size, c);
     }
   }
   buf[cnt] = '\0';
