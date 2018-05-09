@@ -444,7 +444,10 @@ read_string(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UN
       // error: high surrogate without low
       pic_error(pic, "UTF-16 high surrogate without low", 0);
     } else {
-      push_utf8(pic, &buf, &cnt, &size, c);
+      buf[cnt++] = (char)c;
+      if (cnt >= size) {
+        buf = pic_realloc(pic, buf, size *= 2);
+      }
     }
   }
   buf[cnt] = '\0';
