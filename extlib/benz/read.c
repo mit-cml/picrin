@@ -393,13 +393,14 @@ static pic_value
 read_string(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UNUSED(p))
 {
   char *buf;
-  int size, cnt, high;
+  int size, cnt, high, unicode;
   pic_value str;
 
   size = 256;
   buf = pic_malloc(pic, size);
   cnt = 0;
   high = 0;
+  unicode = 0;
 
   /* TODO: intraline whitespaces */
 
@@ -412,6 +413,7 @@ read_string(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UN
       case 'n': c = '\n'; break;
       case 'r': c = '\r'; break;
       case 'u':
+          unicode = 1;
           c = 0;
           for (int i = 0; i < 4; i++) {  // read up to 4 characters of hexadecimal for unicode char
             c <<= 4;
@@ -443,6 +445,10 @@ read_string(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UN
     } else if (high) {
       // error: high surrogate without low
       pic_error(pic, "UTF-16 high surrogate without low", 0);
+    } else if (unicode) {
+      // handle escaped utf16 code point (not surrogate)
+      push_utf8(pic, &buf, &cnt, &size, c);
+      unicode = 0;
     } else {
       buf[cnt++] = (char)c;
       if (cnt >= size) {
