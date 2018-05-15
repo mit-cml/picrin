@@ -189,6 +189,16 @@ restore_cont(pic_state *pic, struct fullcont *cont)
 
   memcpy(cont->stk_pos, cont->stk_ptr, cont->stk_len);
 
+  /* Cleanup old continuation */
+  free(cont->st_ptr);
+  cont->st_ptr = NULL;
+  free(cont->ci_ptr);
+  cont->ci_ptr = NULL;
+  free(cont->ci_ptr);
+  cont->ci_ptr = NULL;
+  free(cont->stk_ptr);
+  cont->stk_ptr = NULL;
+
   longjmp(tmp->jmp, 1);
 }
 
