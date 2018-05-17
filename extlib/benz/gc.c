@@ -106,7 +106,11 @@ void *
 pic_default_allocf(void *PIC_UNUSED(userdata), void *ptr, size_t size)
 {
   if (size != 0) {
-    return realloc(ptr, size);
+    if (ptr == NULL) {
+      return calloc(1, size);
+    } else {
+      return realloc(ptr, size);
+    }
   }
   free(ptr);
   return NULL;
