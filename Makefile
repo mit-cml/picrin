@@ -23,7 +23,7 @@ REPL_ISSUE_TESTS = $(wildcard t/issue/*.sh)
 
 TEST_RUNNER = bin/picrin
 
-CFLAGS += -I./extlib/benz -I./extlib/benz/include -Wall -Wextra -DSTANDALONE -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks -DSCHEME_KIT
+CFLAGS += -I./extlib/benz -I./extlib/benz/include -Wall -Wextra -DSTANDALONE -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -F/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks -DSCHEME_KIT
 LDFLAGS += -lm -framework Foundation -Xlinker -objc_abi_version -Xlinker 2 -fobjc-arc -fobjc-link-runtime
 
 prefix ?= /usr/local

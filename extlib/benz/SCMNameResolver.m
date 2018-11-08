@@ -42,15 +42,19 @@ static NSString *SWIFT_PACKAGE = @"AIComponentKit";
   unsigned int count = 0;
   unsigned int registeredMethods = 0;
   Method *methods;
-
+  
   // Static (class) methods
   methods = class_copyMethodList(object_getClass(clazz), &count);
   if (count > 0) {
     // Add new static method names
     for (unsigned int i = 0; i < count; ++i) {
-      SCMMethod *method = [[SCMMethod alloc] initWithMethod:methods[i] forClass:clazz isStatic:YES];
-      result[method.yailName] = method;
-      ++registeredMethods;
+      @try {
+        SCMMethod *method = [[SCMMethod alloc] initWithMethod:methods[i] forClass:clazz isStatic:YES];
+        result[method.yailName] = method;
+        ++registeredMethods;
+      } @catch (NSException *e) {
+        // invalid method signature
+      }
     }
     free(methods);
   }
@@ -59,9 +63,13 @@ static NSString *SWIFT_PACKAGE = @"AIComponentKit";
   if (count > 0) {
     // Add new instance method names
     for (unsigned int i = 0; i < count; ++i) {
-      SCMMethod *method = [[SCMMethod alloc] initWithMethod:methods[i] forClass:clazz isStatic:NO];
-      result[method.yailName] = method;
-      ++registeredMethods;
+      @try {
+        SCMMethod *method = [[SCMMethod alloc] initWithMethod:methods[i] forClass:clazz isStatic:NO];
+        result[method.yailName] = method;
+        ++registeredMethods;
+      } @catch (NSException *e) {
+        // invalid method signature
+      }
     }
     free(methods);
   }

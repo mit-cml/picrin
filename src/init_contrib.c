@@ -14,7 +14,6 @@ pic_init_contrib(pic_state *pic)
   void pic_init_math(pic_state *);
   void pic_init_r7rs(pic_state *);
   void pic_init_random(pic_state *);
-  void pic_init_readline(pic_state *);
   void pic_init_regexp(pic_state *);
   void pic_init_srfi_0(pic_state *);
   void pic_init_srfi_106(pic_state *);
@@ -23,7 +22,6 @@ pic_init_contrib(pic_state *pic)
   pic_init_math(pic);
   pic_init_r7rs(pic);
   pic_init_random(pic);
-  //pic_init_readline(pic);
   pic_init_regexp(pic);
   pic_init_srfi_0(pic);
   pic_init_srfi_106(pic);

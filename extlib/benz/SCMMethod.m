@@ -26,7 +26,7 @@
     _static = isStatic;
     _class = clazz;
     _selector = method_getName(method);
-
+    
     // Get Yail method name
     NSString *name = [NSString stringWithUTF8String:sel_getName(_selector)];
     NSArray<NSString *> *parts = [name componentsSeparatedByString:@":"];
@@ -42,7 +42,7 @@
         _yailName = [tempName copy];
       }
     }
-
+    
     // Get method signature
     if (isStatic) {
       _signature = [clazz methodSignatureForSelector:_selector];
@@ -77,6 +77,10 @@
     invocation.selector = _selector;
   }
   return invocation;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+  return self;
 }
 
 @synthesize yailName = _yailName;
