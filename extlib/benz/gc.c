@@ -450,6 +450,7 @@ gc_mark_object(pic_state *pic, struct object *obj)
   }
 #ifdef SCHEME_KIT
   case YAIL_TYPE_CLASS:
+  case YAIL_TYPE_PROTOCOL:
   case YAIL_TYPE_METHOD:
   case YAIL_TYPE_INSTANCE:
     // We rely on Objective-C ARC to manage native objects
