@@ -607,6 +607,10 @@ gc_finalize_object(pic_state *pic, struct object *obj)
     yail_native_class_dtor(pic, (struct native_class *)obj);
     break;
   }
+  case YAIL_TYPE_PROTOCOL: {
+    yail_native_protocol_dtor(pic, (struct native_protocol *)obj);
+    break;
+  }
   case YAIL_TYPE_METHOD: {
     yail_native_method_dtor(pic, (struct native_method *)obj);
     break;
