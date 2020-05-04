@@ -333,6 +333,8 @@ read_false(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UNU
 static pic_value
 read_char(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UNUSED(p))
 {
+  unsigned short c2 = 0;
+  int remaining = 4;
   c = next(pic, port);
 
   if (! isdelim(peek(pic, port))) {
@@ -356,6 +358,21 @@ read_char(pic_state *pic, pic_value port, int c, struct reader_control *PIC_UNUS
     case 'r': c = '\r'; if (! expect(pic, port, "eturn")) goto fail; break;
     case 's': c = ' '; if (! expect(pic, port, "pace")) goto fail; break;
     case 't': c = '\t'; if (! expect(pic, port, "ab")) goto fail; break;
+    case 'x':
+      while (remaining && (c = next(pic, port))) {
+        c2 <<= 4;
+        if ('0' <= c && c <= '9') {
+          c2 |= c - '0';
+        } else if ('A' <= c && c <= 'F') {
+          c2 |= c - 'A' + 10;
+        } else if ('a' <= c && c <= 'f') {
+          c2 |= c - 'a' + 10;
+        } else {
+          goto fail;
+        }
+        remaining--;
+      }
+      return pic_int_value(pic, c2);
     }
   }
 
