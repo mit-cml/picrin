@@ -275,6 +275,10 @@ pic_typename(pic_state *pic, int type)
     return "#<native method>";
   case YAIL_TYPE_INSTANCE:
     return "#<native instance>";
+  case YAIL_TYPE_LIST:
+    return "#<yail list>";
+  case YAIL_TYPE_DICT:
+    return "#<yail dict>";
   default:
     pic_error(pic, "pic_typename: invalid type given", 1, pic_int_value(pic, type));
   }

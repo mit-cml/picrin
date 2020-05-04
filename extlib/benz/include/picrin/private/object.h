@@ -146,7 +146,6 @@ struct object *pic_obj_ptr(pic_value);
 #define pic_sym_ptr(pic, o) (assert(pic_sym_p(pic, o)), (symbol *)pic_obj_ptr(o))
 #define pic_str_ptr(pic, o) (assert(pic_str_p(pic, o)), (struct string *)pic_obj_ptr(o))
 #define pic_blob_ptr(pic, o) (assert(pic_blob_p(pic, o)), (struct blob *)pic_obj_ptr(o))
-#define pic_pair_ptr(pic, o) (assert(pic_pair_p(pic, o)), (struct pair *)pic_obj_ptr(o))
 #define pic_vec_ptr(pic, o) (assert(pic_vec_p(pic, o)), (struct vector *)pic_obj_ptr(o))
 #define pic_dict_ptr(pic, o) (assert(pic_dict_p(pic, o)), (struct dict *)pic_obj_ptr(o))
 #define pic_weak_ptr(pic, o) (assert(pic_weak_p(pic, o)), (struct weak *)pic_obj_ptr(o))
@@ -161,6 +160,9 @@ struct object *pic_obj_ptr(pic_value);
 #define yail_native_protocol_ptr(pic, o) (assert(yail_native_protocol_p(pic, o)), (struct native_protocol *)pic_obj_ptr(o))
 #define yail_native_method_ptr(pic, o) (assert(yail_native_method_p(pic, o)), (struct native_method *)pic_obj_ptr(o))
 #define yail_native_instance_ptr(pic, o) (assert(yail_native_instance_p(pic, o)), (struct native_instance *)pic_obj_ptr(o))
+struct pair *pic_pair_ptr(pic_state *, pic_value);
+#else
+#define pic_pair_ptr(pic, o) (assert(pic_pair_p(pic, o)), (struct pair *)pic_obj_ptr(o))
 #endif
 
 #define pic_obj_p(pic,v) (pic_type(pic,v) > PIC_IVAL_END)

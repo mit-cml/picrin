@@ -186,7 +186,10 @@ enum {
   YAIL_TYPE_CLASS  = 34,
   YAIL_TYPE_PROTOCOL = 35,
   YAIL_TYPE_METHOD = 36,
-  YAIL_TYPE_INSTANCE = 37
+  YAIL_TYPE_INSTANCE = 37,
+  YAIL_TYPE_LIST   = 38,
+  YAIL_TYPE_DICT   = 39,
+  YAIL_TYPE_VALUE  = 40
 };
 
 #define pic_invalid_p(pic,v) (pic_type(pic,v) == PIC_TYPE_INVALID)
@@ -202,7 +205,6 @@ enum {
 #define pic_blob_p(pic,v) (pic_type(pic,v) == PIC_TYPE_BLOB)
 #define pic_proc_p(pic,v) (pic_type(pic,v) == PIC_TYPE_FUNC || pic_type(pic, v) == PIC_TYPE_IREP)
 #define pic_nil_p(pic,v) (pic_type(pic,v) == PIC_TYPE_NIL)
-#define pic_pair_p(pic,v) (pic_type(pic,v) == PIC_TYPE_PAIR)
 #define pic_vec_p(pic,v) (pic_type(pic,v) == PIC_TYPE_VECTOR)
 #define pic_dict_p(pic,v) (pic_type(pic,v) == PIC_TYPE_DICT)
 #define pic_weak_p(pic,v) (pic_type(pic,v) == PIC_TYPE_WEAK)
@@ -216,8 +218,15 @@ enum {
 #define yail_native_class_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_CLASS)
 #define yail_native_protocol_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_PROTOCOL)
 #define yail_native_method_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_METHOD)
-#define yail_native_instance_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_INSTANCE)
+#define yail_native_instance_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_INSTANCE || pic_type(pic,v) == YAIL_TYPE_LIST || pic_type(pic,v) == YAIL_TYPE_DICT)
 #define yail_void_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_VOID)
+#define yail_list_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_LIST)
+#define yail_dictionary_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_DICT)
+#define yail_scmvalue_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_VALUE)
+bool pic_pair_p(pic_state *, pic_value);
+pic_value yail_list_value(pic_state *, pic_value);
+#else
+#define pic_pair_p(pic,v) (pic_type(pic,v) == PIC_TYPE_PAIR)
 #endif
 bool pic_data_p(pic_state *, pic_value, const pic_data_type *);
 
