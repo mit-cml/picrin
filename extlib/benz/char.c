@@ -34,7 +34,7 @@ pic_char_integer_to_char(pic_state *pic)
 
   pic_get_args(pic, "i", &i);
 
-  if (i < 0 || i > 127) {
+  if (i < 0 || i > 255) {
     pic_error(pic, "integer->char: integer out of char range", 1, pic_int_value(pic, i));
   }
 
