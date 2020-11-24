@@ -225,6 +225,44 @@ enum {
 #define yail_scmvalue_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_VALUE)
 bool pic_pair_p(pic_state *, pic_value);
 pic_value yail_list_value(pic_state *, pic_value);
+
+/**
+ * Mark a YAIL-compatible object as in-use to prevent garbage collection.
+ *
+ * @param pic the picrin state
+ * @param value the opaque value to mark as in use
+ */
+void yail_gc_mark(pic_state *pic, pic_value value);
+
+/**
+ * Mark an arbitray picrin value to prevent garbage collection.
+ *
+ * @param pic the picrin state
+ * @param value the opaque value to mark as in use
+ */
+void gc_mark(pic_state *pic, pic_value value);
+
+#ifdef DEBUG
+
+/**
+ * Print at least one of the strong paths from a picrin root object to the given value.
+ *
+ * This is provided for debugging purposes only.
+ *
+ * @param pic the picrin state
+ * @param value the opaque value to search for strong references
+ */
+void yail_print_strong_refs(pic_state *pic, pic_value value);
+
+/**
+ * Flag to indicate that a GC root search is in progress.
+ *
+ * This is provided for debugging purposes only.
+ */
+extern int looking_for_gcroots;
+
+#endif
+
 #else
 #define pic_pair_p(pic,v) (pic_type(pic,v) == PIC_TYPE_PAIR)
 #endif

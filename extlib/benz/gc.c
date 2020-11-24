@@ -36,6 +36,53 @@ struct object {
   } u;
 };
 
+#ifdef SCHEME_KIT
+#ifdef DEBUG
+
+/**
+ * Node representing a strong reference in the walk from roots in the GC system.
+ */
+struct gc_path {
+  /**
+   * The previous step in the walk.
+   */
+  struct gc_path *prev;
+
+  /**
+   * The current step of the walk.
+   */
+  pic_value value;
+};
+
+/**
+ * The target object to search for strong references.
+ */
+struct object *graph_target_object = NULL;
+
+/**
+ * The current walk considered for the target.
+ */
+struct gc_path *gc_stack = NULL;
+
+/**
+ * Flag to indicate whether a walk has been printed.
+ */
+int graph_has_printed = 0;
+
+/**
+ * Print the given path.
+ *
+ * @param pic the picrin state
+ * @param path the path to print
+ * @param depth current depth of the walk
+ */
+void yail_print_gc_stack(pic_state *pic, struct gc_path *path, unsigned int depth);
+
+int looking_for_gcroots = 0;
+
+#endif
+#endif
+
 #if !PIC_BITMAP_GC
 
 struct heap {
@@ -306,22 +353,43 @@ mark(pic_state *pic, struct object *obj)
 
 static void gc_mark_object(pic_state *, struct object *);
 
-static void
+void
 gc_mark(pic_state *pic, pic_value v)
 {
   if (! pic_obj_p(pic, v))
     return;
 
   gc_mark_object(pic, pic_obj_ptr(v));
+
 }
 
 static void
 gc_mark_object(pic_state *pic, struct object *obj)
 {
+#ifdef SCHEME_KIT
+#ifdef DEBUG
+  struct gc_path *start = gc_stack;
+#endif
+#endif
  loop:
 
   if (is_marked(pic, obj))
     return;
+
+#ifdef SCHEME_KIT
+#ifdef DEBUG
+  if (graph_target_object != NULL) {
+    struct gc_path *path = malloc(sizeof(struct gc_path));
+    path->prev = gc_stack;
+    path->value = pic_obj_value(obj);
+    gc_stack = path;
+    if (graph_target_object && obj == graph_target_object && !graph_has_printed) {
+      yail_print_gc_stack(pic, path, 0);
+      graph_has_printed = 1;
+    }
+  }
+#endif
+#endif
 
   mark(pic, obj);
 
@@ -452,13 +520,31 @@ gc_mark_object(pic_state *pic, struct object *obj)
   case YAIL_TYPE_CLASS:
   case YAIL_TYPE_PROTOCOL:
   case YAIL_TYPE_METHOD:
-  case YAIL_TYPE_INSTANCE:
     // We rely on Objective-C ARC to manage native objects
+    break;
+  case YAIL_TYPE_INSTANCE:
+  case YAIL_TYPE_VALUE:
+  case YAIL_TYPE_LIST:
+  case YAIL_TYPE_DICT:
+    yail_gc_mark(pic, pic_obj_value(obj));
     break;
 #endif
   default:
     PIC_UNREACHABLE();
   }
+
+#ifdef SCHEME_KIT
+#ifdef DEBUG
+  if (graph_target_object != NULL) {
+    struct gc_path *i = gc_stack;
+    while (i != start) {
+      gc_stack = i->prev;
+      free(i);
+      i = gc_stack;
+    }
+  }
+#endif
+#endif
 }
 
 static void
@@ -615,6 +701,9 @@ gc_finalize_object(pic_state *pic, struct object *obj)
     yail_native_method_dtor(pic, (struct native_method *)obj);
     break;
   }
+  case YAIL_TYPE_LIST:
+  case YAIL_TYPE_DICT:
+  case YAIL_TYPE_VALUE:
   case YAIL_TYPE_INSTANCE: {
     yail_native_instance_dtor(pic, (struct native_instance *)obj);
     break;
@@ -949,3 +1038,44 @@ pic_obj_alloc(pic_state *pic, size_t size, int type)
   gc_protect(pic, obj);
   return obj;
 }
+
+#ifdef SCHEME_KIT
+#ifdef DEBUG
+
+static unsigned int MAX_DEPTH = 20;
+
+void yail_print_gc_stack(pic_state *pic, struct gc_path *path, unsigned int depth) {
+  if (depth > MAX_DEPTH) {
+    return;
+  }
+  for (int i = 0; i < depth; i++) {
+    pic_printf(pic, "  ");
+  }
+  pic_printf(pic, "~a\n", path->value);
+  if (path->prev) {
+    yail_print_gc_stack(pic, path->prev, depth + 1);
+  }
+}
+
+void yail_print_strong_refs(pic_state *pic, pic_value value) {
+  graph_has_printed = 0;
+  graph_target_object = NULL;
+  looking_for_gcroots = 1;
+  switch (pic_type(pic, value)) {
+    case YAIL_TYPE_DICT:
+    case YAIL_TYPE_LIST:
+    case YAIL_TYPE_VALUE:
+    case YAIL_TYPE_INSTANCE:
+      graph_target_object = pic_obj_ptr(value);
+      pic_gc(pic);
+      break;
+    default:
+      break;
+  }
+  graph_has_printed = 0;
+  graph_target_object = NULL;
+  looking_for_gcroots = 0;
+}
+
+#endif
+#endif
