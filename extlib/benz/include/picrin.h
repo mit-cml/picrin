@@ -142,7 +142,7 @@ pic_value pic_false_value(pic_state *);
 #define pic_bool_value(pic, b) ((b) ? pic_true_value(pic) : pic_false_value(pic))
 pic_value pic_eof_object(pic_state *);
 pic_value pic_str_value(pic_state *, const char *str, int len);
-#define pic_cstr_value(pic, cstr) pic_str_value(pic, (cstr), strlen(cstr))
+#define pic_cstr_value(pic, cstr) pic_str_value(pic, (cstr), (int) strlen(cstr))
 #define pic_lit_value(pic, lit) pic_str_value(pic, "" lit, -((int)sizeof lit - 1))
 pic_value pic_strf_value(pic_state *, const char *fmt, ...);
 pic_value pic_vstrf_value(pic_state *, const char *fmt, va_list ap);
