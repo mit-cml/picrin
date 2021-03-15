@@ -242,7 +242,7 @@ void yail_gc_mark(pic_state *pic, pic_value value);
  */
 void gc_mark(pic_state *pic, pic_value value);
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 
 /**
  * Print at least one of the strong paths from a picrin root object to the given value.

@@ -37,7 +37,7 @@ struct object {
 };
 
 #ifdef SCHEME_KIT
-#ifdef DEBUG
+#ifdef MEMDEBUG
 
 /**
  * Node representing a strong reference in the walk from roots in the GC system.
@@ -367,7 +367,7 @@ static void
 gc_mark_object(pic_state *pic, struct object *obj)
 {
 #ifdef SCHEME_KIT
-#ifdef DEBUG
+#ifdef MEMDEBUG
   struct gc_path *start = gc_stack;
 #endif
 #endif
@@ -377,7 +377,7 @@ gc_mark_object(pic_state *pic, struct object *obj)
     return;
 
 #ifdef SCHEME_KIT
-#ifdef DEBUG
+#ifdef MEMDEBUG
   if (graph_target_object != NULL) {
     struct gc_path *path = malloc(sizeof(struct gc_path));
     path->prev = gc_stack;
@@ -534,7 +534,7 @@ gc_mark_object(pic_state *pic, struct object *obj)
   }
 
 #ifdef SCHEME_KIT
-#ifdef DEBUG
+#ifdef MEMDEBUG
   if (graph_target_object != NULL) {
     struct gc_path *i = gc_stack;
     while (i != start) {
@@ -1040,7 +1040,7 @@ pic_obj_alloc(pic_state *pic, size_t size, int type)
 }
 
 #ifdef SCHEME_KIT
-#ifdef DEBUG
+#ifdef MEMDEBUG
 
 static unsigned int MAX_DEPTH = 20;
 
