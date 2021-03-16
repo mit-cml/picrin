@@ -833,6 +833,7 @@ reader_table_init(void)
   reader_table['#'] = read_dispatch;
   reader_table['+'] = read_number;
   reader_table['-'] = read_number;
+  reader_table['.'] = read_number;
   for (c = '0'; c <= '9'; ++c) {
     reader_table[c] = read_number;
   }

@@ -270,7 +270,7 @@ string_to_number(pic_state *pic, const char *str)
   if (*c == '+' || *c == '-')
     c++;
 
-  if (! isdigit(*c++)) {
+  if (*c != '.' && ! isdigit(*c++)) {
     return pic_false_value(pic);
   }
   while (isdigit(*c)) c++;
