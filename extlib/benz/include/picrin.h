@@ -225,6 +225,7 @@ enum {
 #define yail_scmvalue_p(pic,v) (pic_type(pic,v) == YAIL_TYPE_VALUE)
 bool pic_pair_p(pic_state *, pic_value);
 pic_value yail_list_value(pic_state *, pic_value);
+const char *yail_format_native_instance(pic_state *pic, pic_value o);
 
 /**
  * Mark a YAIL-compatible object as in-use to prevent garbage collection.

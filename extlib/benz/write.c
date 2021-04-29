@@ -487,7 +487,9 @@ write_core(pic_state *pic, pic_value obj, pic_value port, struct writer_control 
     pic_fprintf(pic, port, "#<native method %s>", yail_native_method_name(pic, yail_native_method_ptr(pic, obj)));
     break;
   case YAIL_TYPE_INSTANCE:
-    pic_fprintf(pic, port, "#<native %s %p>", yail_native_instance_typename(pic, yail_native_instance_ptr(pic, obj)), yail_native_instance_ptr(pic, obj));
+  case YAIL_TYPE_LIST:
+  case YAIL_TYPE_DICT:
+    pic_fprintf(pic, port, yail_format_native_instance(pic, obj));
     break;
   default:
     pic_fprintf(pic, port, "#<%s %p>", pic_typename(pic, pic_type(pic, obj)), pic_obj_ptr(obj));
